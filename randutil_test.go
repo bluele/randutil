@@ -20,8 +20,38 @@ func TestShuffle(t *testing.T) {
 	ar := make([]int, cap(dt))
 	copy(ar, dt)
 	randutil.Shuffle(dt)
-	if !isChangedSlice(dt, ar) {
+	if !isDiffSlice(dt, ar) {
 		t.Error("shuffle: not changed error")
+	}
+}
+
+func TestSmallSample(t *testing.T) {
+	size := 50
+	sampleSize := 10
+	dt := makeIntRange(size)
+	ar := randutil.Sample(dt, sampleSize).([]int)
+
+	if len(ar) != sampleSize {
+		t.Error("sample: sample size is invalid")
+	}
+
+	if len(dt) != size {
+		t.Error("sample: sample source size has changed")
+	}
+}
+
+func TestBigSample(t *testing.T) {
+	size := 10000000
+	sampleSize := 10
+	dt := makeIntRange(size)
+	ar := randutil.Sample(dt, sampleSize).([]int)
+
+	if len(ar) != sampleSize {
+		t.Error("sample: sample size is invalid")
+	}
+
+	if len(dt) != size {
+		t.Error("sample: sample source size has changed")
 	}
 }
 
@@ -33,7 +63,7 @@ func makeIntRange(n int) []int {
 	return ar
 }
 
-func isChangedSlice(a []int, b []int) bool {
+func isDiffSlice(a []int, b []int) bool {
 	for i := 0; i < len(a); i++ {
 		if a[i] != b[i] {
 			return true
