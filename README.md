@@ -23,7 +23,11 @@ func main() {
   fmt.Println("before:", ss)
   randutil.Shuffle(ss)
   fmt.Println("after:", ss)
-  fmt.Println("choiced:", randutil.Choice(ss))
+
+  fmt.Println("choice:", randutil.Choice(ss))
+
+  samples := randutil.Sample(ss, 3).([]string)
+  fmt.Println("3 samples:", samples)
 }
 
 /* output:
@@ -31,6 +35,7 @@ func main() {
 before: [a b c d e]
 after: [c e a d b]
 choiced: e
+3 samples: [d e b]
 */
 ```
 
