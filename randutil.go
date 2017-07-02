@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2015 Jun Kimura
+Copyright (c) 2017 Jun Kimura
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,13 @@ import (
 	"time"
 )
 
+func makeDefaultRand(seed int64) *rand.Rand {
+	return rand.New(&LockedSource{src: rand.NewSource(1).(rand.Source64)})
+}
+
+// rand function
+var Rand = makeDefaultRand(time.Now().UnixNano())
+
 // Choose a random element from a non-empty slice.
 func Choice(slice interface{}) interface{} {
 	in := reflect.ValueOf(slice)
@@ -41,7 +48,7 @@ func Choice(slice interface{}) interface{} {
 	if n == 0 {
 		panic("choice: length is 0")
 	}
-	i := rand.Intn(n)
+	i := Rand.Intn(n)
 	return in.Index(i).Interface()
 }
 
@@ -53,7 +60,6 @@ func Shuffle(slice interface{}) {
 	}
 	n := in.Len()
 	for i := n - 1; i > 0; i-- {
-		rand.Seed(time.Now().UnixNano())
 		j := int(rand.Float32() * float32(i+1))
 		vi, vj := in.Index(i), in.Index(j)
 		v := vi.Interface()
@@ -87,20 +93,19 @@ func Sample(slice interface{}, k int) interface{} {
 		pin := reflect.MakeSlice(sl, n, n)
 		reflect.Copy(pin, in)
 		for i := 0; i < k; i++ {
-			rand.Seed(time.Now().UnixNano())
-			j := int(rand.Float32() * float32(n-i))
+			j := int(Rand.Float32() * float32(n-i))
 			result.Index(i).Set(pin.Index(j))
 			pin.Index(j).Set(pin.Index(n - i - 1))
 		}
 	} else {
 		selected := make(map[interface{}]interface{})
 		for i := 0; i < k; i++ {
-			j := int(rand.Float32() * nf)
+			j := int(Rand.Float32() * nf)
 			for {
 				if _, ok := selected[j]; !ok {
 					break
 				}
-				j = int(rand.Float32() * nf)
+				j = int(Rand.Float32() * nf)
 			}
 			selected[j] = true
 			result.Index(i).Set(in.Index(j))
