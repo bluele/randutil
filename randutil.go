@@ -59,12 +59,10 @@ func Shuffle(slice interface{}) {
 		panic("shuffle: not slice")
 	}
 	n := in.Len()
+	swap := reflect.Swapper(slice)
 	for i := n - 1; i > 0; i-- {
-		j := int(rand.Float32() * float32(i+1))
-		vi, vj := in.Index(i), in.Index(j)
-		v := vi.Interface()
-		vi.Set(vj)
-		vj.Set(reflect.ValueOf(v))
+		j := int(Rand.Float32() * float32(i+1))
+		swap(i, j)
 	}
 }
 

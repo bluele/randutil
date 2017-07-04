@@ -25,9 +25,11 @@ THE SOFTWARE.
 package randutil_test
 
 import (
-	"github.com/bluele/randutil"
+	"reflect"
+	"sort"
 	"testing"
-	"time"
+
+	"github.com/bluele/randutil"
 )
 
 func TestChoice(t *testing.T) {
@@ -41,11 +43,17 @@ func TestChoice(t *testing.T) {
 
 func TestShuffle(t *testing.T) {
 	dt := makeIntRange(1000)
-	ar := make([]int, cap(dt))
+	ar := make([]int, len(dt))
 	copy(ar, dt)
 	randutil.Shuffle(dt)
 	if !isDiffSlice(dt, ar) {
 		t.Error("shuffle: not changed error")
+	}
+	sort.Slice(dt, func(i, j int) bool {
+		return dt[i] < dt[j]
+	})
+	if !reflect.DeepEqual(ar, dt) {
+		t.Errorf("%v != %v", ar, dt)
 	}
 }
 
@@ -82,7 +90,7 @@ func TestBigSample(t *testing.T) {
 func makeIntRange(n int) []int {
 	ar := []int{}
 	for i := 0; i < n; i++ {
-		ar = append(ar, int(time.Now().UnixNano()))
+		ar = append(ar, i)
 	}
 	return ar
 }
