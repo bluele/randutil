@@ -32,7 +32,7 @@ import (
 )
 
 func makeDefaultRand(seed int64) *rand.Rand {
-	return rand.New(&LockedSource{src: rand.NewSource(1).(rand.Source64)})
+	return rand.New(&LockedSource{src: rand.NewSource(seed).(rand.Source64)})
 }
 
 // rand function
